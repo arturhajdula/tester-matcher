@@ -2,38 +2,34 @@ package testermatcher.model;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public final class Bug implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
     private final Long bugId;
-    private final Long deviceId;
-    private final Long testerId;
+    private final Device device;
+    private final Tester tester;
     
-	@JsonCreator
-    public Bug(@JsonProperty("bugId") Long bugId, @JsonProperty("deviceId") Long deviceId, @JsonProperty("testerId") Long testerId) {
+    public Bug(Long bugId, Device device, Tester tester) {
         this.bugId = bugId;
-        this.deviceId = deviceId;
-        this.testerId = testerId;
+        this.device = device;
+        this.tester = tester;
     }
 
 	public Long getBugId() {
 		return bugId;
 	}
 
-	public Long getDeviceId() {
-		return deviceId;
+	public Device getDevice() {
+		return device;
 	}
 
-	public Long getTesterId() {
-		return testerId;
+	public Tester getTester() {
+		return tester;
 	}
 
 	@Override
 	public String toString() {
-		return "Bug [bugId=" + bugId + ", deviceId=" + deviceId + ", testerId=" + testerId + "]";
+		return "Bug [bugId=" + bugId + ", device=" + device + ", tester=" + tester + "]";
 	}
 }

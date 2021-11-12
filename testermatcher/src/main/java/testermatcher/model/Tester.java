@@ -8,14 +8,14 @@ import java.util.Set;
 public final class Tester implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-    private final Long testerId;
-    private final String firstName;
-    private final String lastName;
-    private final String country;
-    private final Date lastLogin;
-	private final Set<Device> devices;
-	
+
+	private final Long testerId;
+	private final String firstName;
+	private final String lastName;
+	private final String country;
+	private final Date lastLogin;
+	private Set<Device> devices;
+
 	public Tester(Long testerId, String firstName, String lastName, String country, Date lastLogin,
 			Set<Device> devices) {
 		this.testerId = testerId;
@@ -24,6 +24,19 @@ public final class Tester implements Serializable {
 		this.country = country;
 		this.lastLogin = lastLogin;
 		this.devices = Collections.unmodifiableSet(devices);
+	}
+
+	public Tester(Long testerId, String firstName, String lastName, String country, Date lastLogin) {
+		this.testerId = testerId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.country = country;
+		this.lastLogin = lastLogin;
+		this.devices = Collections.emptySet();
+	}
+
+	public String getUserName() {
+		return this.getFirstName() + " " + this.getLastName();
 	}
 
 	public Long getTesterId() {
@@ -46,13 +59,18 @@ public final class Tester implements Serializable {
 		return lastLogin;
 	}
 
+	public void setDevices(Set<Device> devices) {
+		this.devices = devices;
+	}
+
 	public Set<Device> getDevices() {
 		return devices;
 	}
 
 	@Override
 	public String toString() {
-		return "Tester [testerId=" + testerId + ", firstName=" + firstName + ", lastName=" + lastName + ", country="
-				+ country + ", lastLogin=" + lastLogin + ", devices=" + devices + "]";
+		return " [(" + testerId + ".) " + firstName + " " + lastName + " (" + country + ") - uses " + devices.size()
+				+ " devices] ";
 	}
+
 }

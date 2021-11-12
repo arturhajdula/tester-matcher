@@ -1,33 +1,47 @@
 package testermatcher.model;
 
 import java.io.Serializable;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Collections;
+import java.util.Set;
 
 public final class Device implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    private final Long deviceId;
-    private final String description;
+	private final Long deviceId;
+	private final String description;
+	private Set<Tester> testers;
 
-	@JsonCreator
-    public Device(@JsonProperty("deviceId") Long deviceId, @JsonProperty("description") String description) {
-        this.deviceId = deviceId;
-        this.description = description;
-    }
+	public Device(Long deviceId, String description, Set<Tester> testers) {
+		this.deviceId = deviceId;
+		this.description = description;
+		this.testers = Collections.unmodifiableSet(testers);
+	}
 
-    public Long getDeviceId() {
-        return deviceId;
-    }
+	public Device(Long deviceId, String description) {
+		this.deviceId = deviceId;
+		this.description = description;
+		this.testers = Collections.emptySet();
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public Long getDeviceId() {
+		return deviceId;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setTesters(Set<Tester> testers) {
+		this.testers = testers;
+	}
+
+	public Set<Tester> getTesters() {
+		return testers;
+	}
 
 	@Override
 	public String toString() {
-		return "Device [deviceId=" + deviceId + ", description=" + description + "]";
+		return " [(" + deviceId + ".) " + description + " (" + testers.size() + " testers)] ";
 	}
 }
