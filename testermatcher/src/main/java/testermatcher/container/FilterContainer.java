@@ -1,4 +1,4 @@
-package testermatcher;
+package testermatcher.container;
 
 import java.util.HashSet;
 import java.util.List;

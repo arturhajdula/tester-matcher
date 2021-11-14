@@ -1,4 +1,4 @@
-package testermatcher.model.transfer;
+package testermatcher.transfer.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

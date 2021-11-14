@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 
 import testermatcher.model.Device;
 import testermatcher.model.Tester;
-import testermatcher.model.transfer.DeviceTransfer;
-import testermatcher.model.transfer.TesterDeviceTransfer;
-import testermatcher.model.transfer.TesterTransfer;
+import testermatcher.transfer.model.DeviceTransfer;
+import testermatcher.transfer.model.TesterDeviceTransfer;
+import testermatcher.transfer.model.TesterTransfer;
 
 public class DeviceFactory {
 

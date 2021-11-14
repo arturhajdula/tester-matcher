@@ -7,7 +7,7 @@ import java.util.Map;
 import testermatcher.model.Bug;
 import testermatcher.model.Device;
 import testermatcher.model.Tester;
-import testermatcher.model.transfer.BugTransfer;
+import testermatcher.transfer.model.BugTransfer;
 
 public class BugFactory {
 

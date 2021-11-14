@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,14 +23,15 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableModel;
 
-import testermatcher.DataContainer;
-import testermatcher.FilterContainer;
 import testermatcher.algorithm.TesterMatcherAlgorithm;
 import testermatcher.algorithm.UserWithExperience;
-import testermatcher.gui.components.CheckableItem;
-import testermatcher.gui.components.CheckedComboBox;
+import testermatcher.container.DataContainer;
+import testermatcher.container.FilterContainer;
+import testermatcher.gui.components.MultiComboBoxOption;
+import testermatcher.gui.components.MultiComboBox;
+import testermatcher.gui.components.TestersTableModel;
 
-public class MainFrame extends JFrame {
+public class TesterMatcherFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -37,7 +39,7 @@ public class MainFrame extends JFrame {
 	private FilterContainer filterContainer;
 	private JTable table;
 
-	public MainFrame(String title, DataContainer data) {
+	public TesterMatcherFrame(String title, DataContainer data) {
 		super(title);
 		this.dataContainer = data;
 		this.filterContainer = new FilterContainer(data);
@@ -53,12 +55,12 @@ public class MainFrame extends JFrame {
 	private void addComponentsToPanel(JPanel panel) {
 		int gridy = 0;
 
-		CheckableItem[] countriesAll = createComboBoxData(filterContainer.getCountriesAll());
-		CheckableItem[] deviceNamesAll = createComboBoxData(filterContainer.getDeviceNamesAll());
+		MultiComboBoxOption[] countriesAll = createComboBoxData(filterContainer.getCountriesAll());
+		MultiComboBoxOption[] deviceNamesAll = createComboBoxData(filterContainer.getDeviceNamesAll());
 
 		addComponent(panel, new JLabel("Countries:"), gridy++);
 
-		CheckedComboBox<CheckableItem> countriesSelect = new CheckedComboBox<>(
+		MultiComboBox<MultiComboBoxOption> countriesSelect = new MultiComboBox<>(
 				new DefaultComboBoxModel<>(countriesAll));
 		countriesSelect
 				.addPopupMenuListener(new CheckedComboBoxPopupMenuListener(filterContainer.getSelectedCountries()));
@@ -66,7 +68,7 @@ public class MainFrame extends JFrame {
 
 		addComponent(panel, new JLabel("Devices:"), gridy++, new Insets(5, 0, 0, 0));
 
-		CheckedComboBox<CheckableItem> devicesSelect = new CheckedComboBox<>(
+		MultiComboBox<MultiComboBoxOption> devicesSelect = new MultiComboBox<>(
 				new DefaultComboBoxModel<>(deviceNamesAll));
 		devicesSelect
 				.addPopupMenuListener(new CheckedComboBoxPopupMenuListener(filterContainer.getSelectedDeviceNames()));
@@ -74,24 +76,17 @@ public class MainFrame extends JFrame {
 
 		addComponent(panel, new JLabel("Matched testers with experience:"), gridy++, new Insets(30, 0, 0, 0));
 
-		this.table = new JTable(new DefaultTableModel(new Object[][] {}, new String[] { "No.", "User", "Experience" }) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		});
+		this.table = new JTable(new TestersTableModel());
 		this.table.setPreferredScrollableViewportSize(new Dimension(1, 1));
 		this.table.setFillsViewportHeight(true);
 		addComponent(panel, new JScrollPane(table), gridy++, new Insets(0, 0, 0, 0), 150);
 	}
 
-	private CheckableItem[] createComboBoxData(List<String> options) {
-		CheckableItem[] m = new CheckableItem[options.size()];
+	private MultiComboBoxOption[] createComboBoxData(List<String> options) {
+		MultiComboBoxOption[] m = new MultiComboBoxOption[options.size()];
 		int i = 0;
 		for (String el : options) {
-			m[i++] = new CheckableItem(el);
+			m[i++] = new MultiComboBoxOption(el);
 		}
 		return m;
 	}
@@ -124,18 +119,28 @@ public class MainFrame extends JFrame {
 
 		@Override
 		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-			CheckedComboBox<CheckableItem> comboBox = (CheckedComboBox<CheckableItem>) e.getSource();
-			ComboBoxModel<CheckableItem> model = comboBox.getModel();
+			MultiComboBox<MultiComboBoxOption> comboBox = (MultiComboBox<MultiComboBoxOption>) e.getSource();
+			ComboBoxModel<MultiComboBoxOption> model = comboBox.getModel();
+			Set<String> valuesPrev = new HashSet<>(selectedValues);
 			selectedValues.clear();
+			fillSelectedValues(model);
 
+			if (isChangeInSelection(valuesPrev)) {
+				updateTableModel(executeAlgorithm());
+			}
+		}
+
+		private void fillSelectedValues(ComboBoxModel<MultiComboBoxOption> model) {
 			for (int i = 0; i < model.getSize(); i++) {
-				CheckableItem item = model.getElementAt(i);
-				if (item.isSelected()) {
+				MultiComboBoxOption item = model.getElementAt(i);
+				if (item.isSelected() && !item.isOptionSelectAll()) {
 					selectedValues.add(item.toString());
 				}
 			}
+		}
 
-			updateTableModel(executeAlgorithm());
+		private boolean isChangeInSelection(Set<String> valuesPrev) {
+			return !selectedValues.equals(valuesPrev);
 		}
 
 		@Override

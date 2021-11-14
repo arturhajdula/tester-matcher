@@ -1,18 +1,22 @@
-package testermatcher.model.transfer;
+package testermatcher.transfer;
 
 import java.util.List;
 
 import testermatcher.csv.CSVConfig;
 import testermatcher.csv.CSVReader;
 import testermatcher.csv.CSVResourcesFilePath;
+import testermatcher.transfer.model.BugTransfer;
+import testermatcher.transfer.model.DeviceTransfer;
+import testermatcher.transfer.model.TesterDeviceTransfer;
+import testermatcher.transfer.model.TesterTransfer;
 
-public class CSVDataContainer {
+public class DataTransfer {
 	private final List<TesterTransfer> testers;
 	private final List<TesterDeviceTransfer> testerDevices;
 	private final List<DeviceTransfer> devices;
 	private final List<BugTransfer> bugs;
 
-	public CSVDataContainer(List<TesterTransfer> testers, List<TesterDeviceTransfer> testerDevices,
+	public DataTransfer(List<TesterTransfer> testers, List<TesterDeviceTransfer> testerDevices,
 			List<DeviceTransfer> devices, List<BugTransfer> bugs) {
 		this.testers = testers;
 		this.testerDevices = testerDevices;
@@ -20,8 +24,8 @@ public class CSVDataContainer {
 		this.bugs = bugs;
 	}
 
-	public static CSVDataContainer readData(CSVConfig config) {
-		return new CSVDataContainer(
+	public static DataTransfer readData(CSVConfig config) {
+		return new DataTransfer(
 				CSVReader.readSimpleObjectsList(TesterTransfer.class, CSVResourcesFilePath.TESTERS, config),
 				CSVReader.readSimpleObjectsList(TesterDeviceTransfer.class, CSVResourcesFilePath.TESTER_DEVICE, config),
 				CSVReader.readSimpleObjectsList(DeviceTransfer.class, CSVResourcesFilePath.DEVICES, config),

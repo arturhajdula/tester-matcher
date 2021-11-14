@@ -1,4 +1,4 @@
-package testermatcher;
+package testermatcher.container;
 
 import java.util.List;
 import java.util.Map;
@@ -12,8 +12,8 @@ import testermatcher.factory.TesterFactory;
 import testermatcher.model.Bug;
 import testermatcher.model.Device;
 import testermatcher.model.Tester;
-import testermatcher.model.transfer.CSVDataContainer;
-import testermatcher.model.transfer.TesterDeviceTransfer;
+import testermatcher.transfer.DataTransfer;
+import testermatcher.transfer.model.TesterDeviceTransfer;
 
 public class DataContainer {
 
@@ -27,8 +27,8 @@ public class DataContainer {
 		this.bugs = bugs;
 	}
 
-	public static DataContainer generateDataContainer(CSVDataContainer transferData) {
-		List<TesterDeviceTransfer> testerDeviceTransfer = transferData.getTesterDevices();
+	public static DataContainer generateDataContainer(DataTransfer dataTransfer) {
+		List<TesterDeviceTransfer> testerDeviceTransfer = dataTransfer.getTesterDevices();
 
 		final Map<Long, Set<Long>> testersDevices = testerDeviceTransfer.stream()
 				.collect(Collectors.groupingBy(TesterDeviceTransfer::getTesterId,
@@ -37,9 +37,9 @@ public class DataContainer {
 				.collect(Collectors.groupingBy(TesterDeviceTransfer::getDeviceId,
 						Collectors.mapping(TesterDeviceTransfer::getTesterId, Collectors.toSet())));
 
-		Map<Long, Tester> testers = TesterFactory.createTesters(transferData.getTesters()).stream()
+		Map<Long, Tester> testers = TesterFactory.createTesters(dataTransfer.getTesters()).stream()
 				.collect(Collectors.toMap(Tester::getTesterId, Function.identity()));
-		Map<Long, Device> devices = DeviceFactory.createDevices(transferData.getDevices()).stream()
+		Map<Long, Device> devices = DeviceFactory.createDevices(dataTransfer.getDevices()).stream()
 				.collect(Collectors.toMap(Device::getDeviceId, Function.identity()));
 
 		testers.values().stream().forEach(t -> t.setDevices(testersDevices.get(t.getTesterId()).stream()
@@ -47,7 +47,7 @@ public class DataContainer {
 		devices.values().stream().forEach(d -> d.setTesters(devicesTesters.get(d.getDeviceId()).stream()
 				.map(testerId -> testers.get(testerId)).collect(Collectors.toSet())));
 
-		Map<Long, Bug> bugs = BugFactory.createBugs(transferData.getBugs(), testers, devices).stream()
+		Map<Long, Bug> bugs = BugFactory.createBugs(dataTransfer.getBugs(), testers, devices).stream()
 				.collect(Collectors.toMap(Bug::getBugId, Function.identity()));
 
 		return new DataContainer(testers, devices, bugs);

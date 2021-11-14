@@ -8,8 +8,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import testermatcher.DataContainer;
-import testermatcher.FilterContainer;
+import testermatcher.container.DataContainer;
+import testermatcher.container.FilterContainer;
 import testermatcher.model.Bug;
 import testermatcher.model.Device;
 import testermatcher.model.Tester;
@@ -39,7 +39,6 @@ public class TesterMatcherAlgorithm {
 			testerIds.removeAll(bugsCountPerTesterId.keySet());
 			testerIds.stream().forEach(missingTesterId -> bugsCountPerTesterId.put(missingTesterId, 0L));
 		}
-		System.out.println("All matching testers (" + testersMatched.size() + "):" + testersMatched);
 
 		return bugsCountPerTesterId.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
 				.map(e -> new UserWithExperience(dataContainer.getTesterUserName(e.getKey()), e.getValue()))

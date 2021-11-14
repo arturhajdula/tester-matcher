@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import testermatcher.model.Tester;
-import testermatcher.model.transfer.TesterTransfer;
+import testermatcher.transfer.model.TesterTransfer;
 
 public class TesterFactory {
 

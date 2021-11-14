@@ -11,7 +11,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 
-class CheckBoxCellRenderer<E extends CheckableItem> implements ListCellRenderer<E> {
+class MultiComboBoxRenderer<E extends MultiComboBoxOption> implements ListCellRenderer<E> {
 	private final JLabel label = new JLabel(" ");
 	private final JCheckBox check = new JCheckBox(" ");
 
@@ -36,8 +36,21 @@ class CheckBoxCellRenderer<E extends CheckableItem> implements ListCellRenderer<
 		}
 	}
 
-	private static <E extends CheckableItem> String getCheckedItemString(ListModel<E> model) {
-		return IntStream.range(0, model.getSize()).mapToObj(model::getElementAt).filter(CheckableItem::isSelected)
-				.map(Objects::toString).sorted().collect(Collectors.joining(", "));
+	private static <E extends MultiComboBoxOption> String getCheckedItemString(ListModel<E> model) {
+
+		String selectedValues = IntStream.range(1, model.getSize()).mapToObj(model::getElementAt)
+				.filter(MultiComboBoxOption::isSelected).map(Objects::toString).sorted().collect(Collectors.joining(", "));
+
+		if (getOptionAll(model).isSelected()) {
+			return getOptionAll(model).getText() + " (" + selectedValues + ")";
+		} else if (selectedValues.length() == 0) {
+			return " (no option selected) ";
+		}
+
+		return selectedValues;
+	}
+
+	private static <E extends MultiComboBoxOption> E getOptionAll(ListModel<E> model) {
+		return model.getElementAt(0);
 	}
 }

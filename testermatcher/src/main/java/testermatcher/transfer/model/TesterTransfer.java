@@ -1,4 +1,4 @@
-package testermatcher.model.transfer;
+package testermatcher.transfer.model;
 
 import java.io.Serializable;
 import java.util.Date;
