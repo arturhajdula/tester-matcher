@@ -26,9 +26,10 @@ import javax.swing.table.DefaultTableModel;
 import testermatcher.algorithm.TesterMatcherAlgorithm;
 import testermatcher.algorithm.UserWithExperience;
 import testermatcher.container.DataContainer;
-import testermatcher.container.FilterContainer;
-import testermatcher.gui.components.MultiComboBoxOption;
+import testermatcher.container.FilterInputData;
+import testermatcher.container.FilterOutputData;
 import testermatcher.gui.components.MultiComboBox;
+import testermatcher.gui.components.MultiComboBoxOption;
 import testermatcher.gui.components.TestersTableModel;
 
 public class TesterMatcherFrame extends JFrame {
@@ -36,13 +37,14 @@ public class TesterMatcherFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private DataContainer dataContainer;
-	private FilterContainer filterContainer;
+	private FilterInputData filterInput;
+	private FilterOutputData filterOutput;
 	private JTable table;
 
 	public TesterMatcherFrame(String title, DataContainer data) {
 		super(title);
 		this.dataContainer = data;
-		this.filterContainer = new FilterContainer(data);
+		this.filterInput = new FilterInputData(data);
 
 		setLayout(new BorderLayout());
 
@@ -55,23 +57,21 @@ public class TesterMatcherFrame extends JFrame {
 	private void addComponentsToPanel(JPanel panel) {
 		int gridy = 0;
 
-		MultiComboBoxOption[] countriesAll = createComboBoxData(filterContainer.getCountriesAll());
-		MultiComboBoxOption[] deviceNamesAll = createComboBoxData(filterContainer.getDeviceNamesAll());
+		MultiComboBoxOption[] countriesAll = createComboBoxData(filterInput.getCountriesAll());
+		MultiComboBoxOption[] deviceNamesAll = createComboBoxData(filterInput.getDeviceNamesAll());
 
 		addComponent(panel, new JLabel("Countries:"), gridy++);
 
 		MultiComboBox<MultiComboBoxOption> countriesSelect = new MultiComboBox<>(
 				new DefaultComboBoxModel<>(countriesAll));
-		countriesSelect
-				.addPopupMenuListener(new CheckedComboBoxPopupMenuListener(filterContainer.getSelectedCountries()));
+		countriesSelect.addPopupMenuListener(new CheckedComboBoxPopupMenuListener(filterOutput.getSelectedCountries()));
 		addComponent(panel, countriesSelect, gridy++);
 
 		addComponent(panel, new JLabel("Devices:"), gridy++, new Insets(5, 0, 0, 0));
 
 		MultiComboBox<MultiComboBoxOption> devicesSelect = new MultiComboBox<>(
 				new DefaultComboBoxModel<>(deviceNamesAll));
-		devicesSelect
-				.addPopupMenuListener(new CheckedComboBoxPopupMenuListener(filterContainer.getSelectedDeviceNames()));
+		devicesSelect.addPopupMenuListener(new CheckedComboBoxPopupMenuListener(filterOutput.getSelectedDeviceNames()));
 		addComponent(panel, devicesSelect, gridy++);
 
 		addComponent(panel, new JLabel("Matched testers with experience:"), gridy++, new Insets(30, 0, 0, 0));
@@ -149,7 +149,7 @@ public class TesterMatcherFrame extends JFrame {
 	}
 
 	public List<UserWithExperience> executeAlgorithm() {
-		return TesterMatcherAlgorithm.execute(dataContainer, filterContainer);
+		return TesterMatcherAlgorithm.execute(dataContainer, filterOutput);
 	}
 
 	private void updateTableModel(List<UserWithExperience> result) {

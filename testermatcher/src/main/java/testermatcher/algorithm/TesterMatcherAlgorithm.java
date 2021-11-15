@@ -9,20 +9,16 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import testermatcher.container.DataContainer;
-import testermatcher.container.FilterContainer;
+import testermatcher.container.FilterOutputData;
 import testermatcher.model.Bug;
 import testermatcher.model.Device;
 import testermatcher.model.Tester;
 
 public class TesterMatcherAlgorithm {
 
-	public static List<UserWithExperience> execute(DataContainer dataContainer, FilterContainer filter) {
+	public static List<UserWithExperience> execute(DataContainer dataContainer, FilterOutputData filter) {
 		Set<String> selectedCountries = filter.getSelectedCountries();
-		Set<Long> selectedDeviceIds = dataContainer.getDevices().values().stream()
-				.filter(dev -> filter.getSelectedDeviceNames().contains(dev.getDescription())).map(d -> d.getDeviceId())
-				.collect(Collectors.toSet());
-		System.out.println("Countries = " + selectedCountries + "\tDevices = "
-				+ selectedDeviceIds.stream().map(s -> dataContainer.getDevices().get(s)).collect(Collectors.toSet()));
+		Set<Long> selectedDeviceIds = getSelectedDeviceIdsFromDeviceNames(filter, dataContainer);
 
 		List<Tester> testersMatched = dataContainer.getTesters().values().stream()
 				.filter(filterTestersCondition(selectedCountries, selectedDeviceIds)).collect(Collectors.toList());
@@ -34,15 +30,26 @@ public class TesterMatcherAlgorithm {
 				.collect(Collectors.groupingBy(b -> b.getTester().getTesterId(), Collectors.counting()));
 
 		if (bugsCountPerTesterId.size() < testersMatched.size()) {
-			Set<Long> testerIds = new HashSet<Long>(
-					testersMatched.stream().map(t -> t.getTesterId()).collect(Collectors.toSet()));
-			testerIds.removeAll(bugsCountPerTesterId.keySet());
-			testerIds.stream().forEach(missingTesterId -> bugsCountPerTesterId.put(missingTesterId, 0L));
+			insertTestersWithNoBugsFiled(testersMatched, bugsCountPerTesterId);
 		}
 
 		return bugsCountPerTesterId.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
 				.map(e -> new UserWithExperience(dataContainer.getTesterUserName(e.getKey()), e.getValue()))
 				.collect(Collectors.toList());
+	}
+
+	private static void insertTestersWithNoBugsFiled(List<Tester> testersMatched,
+			Map<Long, Long> bugsCountPerTesterId) {
+		Set<Long> testerIds = new HashSet<Long>(
+				testersMatched.stream().map(t -> t.getTesterId()).collect(Collectors.toSet()));
+		testerIds.removeAll(bugsCountPerTesterId.keySet());
+		testerIds.stream().forEach(missingTesterId -> bugsCountPerTesterId.put(missingTesterId, 0L));
+	}
+
+	private static Set<Long> getSelectedDeviceIdsFromDeviceNames(FilterOutputData filter, DataContainer dataContainer) {
+		return dataContainer.getDevices().values().stream()
+				.filter(dev -> filter.getSelectedDeviceNames().contains(dev.getDescription())).map(d -> d.getDeviceId())
+				.collect(Collectors.toSet());
 	}
 
 	private static Predicate<? super Bug> filterBugsCondition(Set<String> selectedCountries,
