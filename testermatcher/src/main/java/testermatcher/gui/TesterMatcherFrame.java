@@ -45,6 +45,7 @@ public class TesterMatcherFrame extends JFrame {
 		super(title);
 		this.dataContainer = data;
 		this.filterInput = new FilterInputData(data);
+		this.filterOutput = new FilterOutputData();
 
 		setLayout(new BorderLayout());
 
